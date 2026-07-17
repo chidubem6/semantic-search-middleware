@@ -1,0 +1,25 @@
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    app_env: str = "development"
+    app_name: str = "Semantic Search Middleware"
+    api_prefix: str = "/api/v1"
+    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/semantic_search"
+    source_database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/source_data"
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_dimension: int = 384
+    top_k: int = 5
+    min_similarity_score: float = 0.30
+    llm_provider: str = "ollama"
+    llm_model: str = "llama3.2"
+    ollama_base_url: str = "http://localhost:11434"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
