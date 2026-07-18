@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import cast
 
 from sentence_transformers import SentenceTransformer
 
@@ -9,4 +10,5 @@ class SentenceTransformerEmbedder:
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         vectors = self._model.encode(list(texts), normalize_embeddings=True)
-        return vectors.tolist()
+        # .tolist() is untyped (returns Any); cast to the declared return type.
+        return cast(list[list[float]], vectors.tolist())

@@ -6,10 +6,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      # Host port defaults to 5432, but can be overridden (e.g. DB_PORT=5433 in
+      # .env) to avoid clashing with another local Postgres. Container is always 5432.
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+      - ./scripts/seed_source.sql:/docker-entrypoint-initdb.d/002-seed-source.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d semantic_search"]
       interval: 5s

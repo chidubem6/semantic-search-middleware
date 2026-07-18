@@ -13,7 +13,9 @@ class Embedder(Protocol):
 
 
 class VectorStore(Protocol):
-    def upsert(self, documents: Sequence[IndexedDocument], vectors: Sequence[list[float]]) -> None: ...
+    def upsert(
+        self, documents: Sequence[IndexedDocument], vectors: Sequence[list[float]]
+    ) -> None: ...
 
     def search(
         self,

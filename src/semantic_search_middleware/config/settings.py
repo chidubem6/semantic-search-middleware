@@ -4,7 +4,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    # extra="ignore": the .env file is shared with Docker (e.g. DB_PORT), so
+    # ignore env vars that aren't settings fields instead of erroring on them.
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     app_env: str = "development"
     app_name: str = "Semantic Search Middleware"
@@ -15,6 +17,11 @@ class Settings(BaseSettings):
     embedding_dimension: int = 384
     top_k: int = 5
     min_similarity_score: float = 0.30
+    # Which source table to index, its primary-key column, and the columns whose
+    # values get verbalized into the text we embed.
+    index_table: str = "support_tickets"
+    index_primary_key: str = "id"
+    index_columns: list[str] = ["subject", "body", "product", "status", "priority"]
     llm_provider: str = "ollama"
     llm_model: str = "llama3.2"
     ollama_base_url: str = "http://localhost:11434"
