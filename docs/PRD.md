@@ -57,9 +57,9 @@ Primary use case: a user types a question in the chat interface; the system retr
 - **FR-2** Support selecting which tables/columns are indexed via configuration.
 - **FR-3** Preserve a link from every generated document back to its source table and primary key.
 
-### 3.2 Verbalization / representation
+### 3.2 Verbalisation / representation
 
-- **FR-4** Convert each record into an embeddable text “document” using a configurable strategy (row serialization and/or template-based natural-language verbalization).
+- **FR-4** Convert each record into an embeddable text “document” using a configurable strategy (row serialisation and/or template-based natural-language verbalisation).
 - **FR-5** Support relationship-aware documents that follow foreign keys, so joined context (e.g. an order + its customer + line items) is embedded together rather than as isolated fragments.
 
 ### 3.3 Embedding & vector storage
@@ -106,7 +106,7 @@ Primary use case: a user types a question in the chat interface; the system retr
 ## 5. System architecture
 
 ```
-Relational DB ──► Connector ──► Verbalizer ──► Embedding ──► Vector DB
+Relational DB ──► Connector ──► Verbaliser ──► Embedding ──► Vector DB
                                                                  │
 User ──► Chat UI ──► RAG Orchestrator ──► Retrieval API ◄────────┘
                           │
@@ -116,7 +116,7 @@ User ──► Chat UI ──► RAG Orchestrator ──► Retrieval API ◄─
 Components:
 
 1. **Connector layer** — reads schema/rows from the relational DB.
-1. **Verbalization layer** — turns rows into embeddable documents with source references.
+1. **Verbalisation layer** — turns rows into embeddable documents with source references.
 1. **Embedding service** — produces vectors.
 1. **Vector store** — holds vectors + metadata; serves similarity search.
 1. **Retrieval API** — query → ranked records with filters.
@@ -148,7 +148,7 @@ Components:
 
 - **Vector embeddings** — numerical representations capturing semantic meaning of text.
 - **Semantic / similarity search** — retrieval by vector distance (cosine/dot product) rather than exact match.
-- **Data verbalization** — converting structured rows into natural-language text suitable for embedding.
+- **Data verbalisation** — converting structured rows into natural-language text suitable for embedding.
 - **Relationship-aware chunking** — following foreign keys so embedded documents retain relational context.
 - **Retrieval-Augmented Generation (RAG)** — grounding LLM answers in retrieved context.
 - **Hybrid search** — combining keyword (lexical) and vector (semantic) retrieval.
@@ -163,7 +163,7 @@ Components:
 ## 8. Success metrics
 
 - **Hallucination reduction** — grounded system vs. ungrounded LLM baseline on the question set (headline result).
-- **Retrieval quality** — precision/recall@k against labeled expected records.
+- **Retrieval quality** — precision/recall@k against labelled expected records.
 - **Answer correctness** — judged accuracy on the fixed question set.
 - **Latency** — median and tail end-to-end response time, with per-stage breakdown.
 - **Robustness rate** — share of ambiguous/out-of-scope questions handled gracefully.
@@ -172,7 +172,7 @@ Components:
 
 ## 9. Deliverables
 
-1. Functional middleware (connector → verbalizer → embeddings → vector store → retrieval API).
+1. Functional middleware (connector → verbaliser → embeddings → vector store → retrieval API).
 1. Chatbot interface with grounded, cited answers.
 1. Vector database populated from a realistic relational dataset.
 1. Evaluation report (accuracy, response time, robustness, hallucination reduction).
@@ -186,7 +186,7 @@ Components:
 |-----------------------------------------------------|-------------------------------------------------------|
 |Pure vector search fails on aggregate/numeric queries|Add the text-to-SQL hybrid path (FR-18)                |
 |Stale embeddings after DB changes                    |Incremental sync (FR-8)                                |
-|Poor verbalization → poor retrieval                  |Compare strategies early; iterate (FR-4/FR-5)          |
+|Poor verbalisation → poor retrieval                  |Compare strategies early; iterate (FR-4/FR-5)          |
 |Embedding/LLM cost or latency                        |Prefer local models for the prototype; cache embeddings|
 |Evaluation set too small/biased                      |Build 30–50 representative questions up front          |
 

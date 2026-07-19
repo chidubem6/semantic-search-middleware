@@ -11,7 +11,7 @@
 ## MVP request flow
 
 1. `/search` receives query text and optional metadata filters.
-2. The embedding provider produces a normalized query vector.
+2. The embedding provider produces a normalised query vector.
 3. The vector store returns the top-k documents and source metadata.
 4. `/chat` passes those documents to the RAG service.
 5. The RAG service generates an answer constrained to the records.

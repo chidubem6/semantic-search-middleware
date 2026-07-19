@@ -8,7 +8,7 @@
 `semantic-search-middleware` is a read-only middleware that indexes relational
 database rows as embeddings and serves semantic search (Milestone 0) and, later,
 grounded RAG chat. Milestone 0 proves the vertical slice end-to-end: read one
-source table → verbalize each row → embed locally → store in pgvector → return
+source table → verbalise each row → embed locally → store in pgvector → return
 top-k matches from `POST /api/v1/search` with source citations.
 
 This is a tutorial + portfolio project. Per the agreed working model, **Chidubem
@@ -17,7 +17,7 @@ scaffolds the plumbing** (marked 🔧 CLAUDE). Every new concept is explained
 before the code.
 
 The scaffolding already implements: `PostgresConnector.read_rows`,
-`SentenceTransformerEmbedder.embed`, `RowVerbalizer.verbalize`,
+`SentenceTransformerEmbedder.embed`, `RowVerbaliser.verbalise`,
 `SearchService.search`, and the domain ports/models (`RelationalConnector`,
 `Embedder`, `VectorStore`, `IndexedDocument`, `SearchResult`, `SourceReference`,
 `Citation`). The chief gap is the pgvector `VectorStore`, an indexing entrypoint,
@@ -62,7 +62,7 @@ settings:
 | column | type | purpose |
 |---|---|---|
 | `document_id` | `text` PRIMARY KEY | deterministic `"support_tickets:<id>"` |
-| `content` | `text` | verbalized row |
+| `content` | `text` | verbalised row |
 | `embedding` | `Vector(384)` (pgvector) | the embedding |
 | `source_table` | `text` | citation |
 | `source_pk` | `text` | citation (pk column name) |
@@ -76,12 +76,12 @@ settings:
   similarity as `score = 1 - distance`; drop rows below `MIN_SIMILARITY_SCORE`;
   map rows back into `SearchResult`/`IndexedDocument`. ✍️ CHIDUBEM (with coaching)
 
-Concepts to explain first: what an embedding is, normalized vectors, cosine
+Concepts to explain first: what an embedding is, normalised vectors, cosine
 similarity vs distance, why `1 - distance`, the pgvector `<=>` / `<->` operators.
 
 ### 2. Indexing pipeline — `ingestion/index.py` + `IndexingService`
 
-Orchestrates existing pieces: connector.read_rows → verbalizer.verbalize →
+Orchestrates existing pieces: connector.read_rows → verbaliser.verbalise →
 embedder.embed → build `IndexedDocument` (deterministic `document_id`) →
 vector_store.upsert. Batches embeds for speed.
 
@@ -105,7 +105,7 @@ call. 🔧 CLAUDE (DI wiring), with Chidubem reviewing the dependency lifecycle.
 ## Data flow
 
 ```
-make index:  support_tickets rows → verbalize → embed(384) → documents (pgvector)
+make index:  support_tickets rows → verbalise → embed(384) → documents (pgvector)
 /search:     query → embed(384) → cosine search top_k → threshold → SearchResult + Citation
 ```
 

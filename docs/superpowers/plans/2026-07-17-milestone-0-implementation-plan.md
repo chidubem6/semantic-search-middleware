@@ -32,7 +32,7 @@ Each chunk lists the concept to teach first, who writes it (✍️ Chidubem /
 
 ## Chunk 5 — The indexing pipeline ✍️ CHIDUBEM
 - **Teach first:** orchestration, deterministic `document_id`, batching embeds.
-- Chidubem writes `IndexingService` wiring connector → verbalizer → embedder →
+- Chidubem writes `IndexingService` wiring connector → verbaliser → embedder →
   `document_id` → `upsert`. Claude adds the `python -m ...ingestion.index` CLI + `make index`.
 - **Verify:** `make index` prints indexed count; re-run → same count (idempotent).
 

@@ -15,7 +15,7 @@ A read-only middleware that indexes relational database records as embeddings an
 ## Architecture
 
 ```text
-PostgreSQL -> Connector -> Verbalizer -> Embedder -> pgvector
+PostgreSQL -> Connector -> Verbaliser -> Embedder -> pgvector
                                                    |
 User -> Streamlit -> FastAPI -> Retriever ---------+
                          |

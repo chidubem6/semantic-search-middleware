@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     top_k: int = 5
     min_similarity_score: float = 0.30
     # Which source table to index, its primary-key column, and the columns whose
-    # values get verbalized into the text we embed.
+    # values get verbalised into the text we embed.
     index_table: str = "support_tickets"
     index_primary_key: str = "id"
     index_columns: list[str] = ["subject", "body", "product", "status", "priority"]
