@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     llm_provider: str = "ollama"
     llm_model: str = "llama3.2"
     ollama_base_url: str = "http://localhost:11434"
+    llm_timeout_seconds: float = 60.0
 
 
 @lru_cache

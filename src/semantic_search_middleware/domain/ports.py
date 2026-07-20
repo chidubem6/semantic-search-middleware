@@ -23,3 +23,7 @@ class VectorStore(Protocol):
         top_k: int,
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]: ...
+
+
+class LlmClient(Protocol):
+    def complete(self, system_prompt: str, user_prompt: str) -> str: ...
