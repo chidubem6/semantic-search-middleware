@@ -57,7 +57,12 @@ Open `http://localhost:8000/docs`.
 - `POST /api/v1/search`
 - `POST /api/v1/chat`
 
-The search and chat endpoints currently expose the intended contracts and return placeholder results until the indexing and retrieval implementations are completed.
+`POST /api/v1/search` is implemented: it embeds the query, retrieves the nearest
+indexed documents from pgvector, and returns them scored and with source
+citations. Populate the index first with `python scripts/index_source.py`.
+
+`POST /api/v1/chat` still returns a placeholder until grounded generation is
+implemented (Milestone 1).
 
 ## Recommended build order
 
