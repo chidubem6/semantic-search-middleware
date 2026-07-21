@@ -23,8 +23,3 @@ def build_context_prompt(question: str, results: Sequence[SearchResult]) -> str:
     context = "\n".join(lines)
 
     return f"{context}\n\nQuestion: {question}"
-
-
-INSUFFICIENT_CONTEXT_ANSWER = (
-    "I could not find any records relevant to that question, so I cannot answer it."
-)
