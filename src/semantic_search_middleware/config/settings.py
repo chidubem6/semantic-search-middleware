@@ -1,6 +1,15 @@
 from functools import lru_cache
 
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Relationship(BaseModel):
+    local_column: str
+    referenced_table: str
+    referenced_key: str
+    columns: list[str]
+    label: str
 
 
 class Settings(BaseSettings):
@@ -22,6 +31,22 @@ class Settings(BaseSettings):
     index_table: str = "support_tickets"
     index_primary_key: str = "id"
     index_columns: list[str] = ["subject", "body", "product", "status", "priority"]
+    index_relationships: list[Relationship] = [
+        Relationship(
+            local_column="customer_id",
+            referenced_table="customers",
+            referenced_key="id",
+            columns=["name", "plan", "region"],
+            label="customer",
+        ),
+        Relationship(
+            local_column="product_id",
+            referenced_table="products",
+            referenced_key="id",
+            columns=["name", "team"],
+            label="product",
+        ),
+    ]
     llm_provider: str = "ollama"
     llm_model: str = "llama3.2"
     ollama_base_url: str = "http://localhost:11434"
