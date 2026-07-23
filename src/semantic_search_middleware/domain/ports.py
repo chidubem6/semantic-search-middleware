@@ -7,6 +7,10 @@ from .models import IndexedDocument, SearchResult
 class RelationalConnector(Protocol):
     def read_rows(self, table: str, columns: Sequence[str]) -> Iterable[dict[str, Any]]: ...
 
+    def read_referenced_rows(
+        self, table: str, key: str, key_values: Iterable[Any], columns: Sequence[str]
+    ) -> dict[Any, dict[str, Any]]: ...
+
 
 class Embedder(Protocol):
     def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
