@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+from semantic_search_middleware.config.settings import Relationship
 from semantic_search_middleware.domain.models import IndexedDocument, SourceReference
 from semantic_search_middleware.domain.ports import Embedder, RelationalConnector, VectorStore
 from semantic_search_middleware.ingestion.verbaliser import RowVerbaliser
@@ -18,15 +19,50 @@ class IndexingService:
         self._embedder = embedder
         self._vector_store = vector_store
 
-    def index_table(self, table: str, primary_key: str, content_columns: Sequence[str]) -> int:
+    def index_table(
+        self,
+        table: str,
+        primary_key: str,
+        content_columns: Sequence[str],
+        relationships: Sequence[Relationship] = (),
+        strategy: str = "isolated",
+    ) -> int:
         documents = []
         texts = []
 
-        # Fetch the content columns *plus* the primary key: the key is needed for the
-        # document id and citation, but is deliberately kept out of the embedded text.
-        for row in self._connector.read_rows(table, [*content_columns, primary_key]):
+        rows = list(
+            self._connector.read_rows(
+                table, [primary_key, *content_columns, *[rel.local_column for rel in relationships]]
+            )
+        )
+
+        # Resolved referenced rows, keyed {local_column: {key_value: fields}} -- e.g.
+        # {"customer_id": {7: {"name": "Ada", "plan": "enterprise", ...}}}.
+        foreign_key_dict = {}
+
+        # Resolve every relationship up front in ONE batch query each (not per row --
+        # avoids the N+1 problem). Only the "joined" strategy pulls related data.
+        if strategy == "joined":
+            for rel in relationships:
+                key_values = [row[rel.local_column] for row in rows]  # this rel's FK on every row
+
+                referenced_rows_by_keys = self._connector.read_referenced_rows(
+                    rel.referenced_table, rel.referenced_key, key_values, rel.columns
+                )
+
+                foreign_key_dict[rel.local_column] = referenced_rows_by_keys
+
+        for row in rows:
+            # Fold each relationship's fields for THIS row into (label, fields) pairs.
+            relations = []
+            if strategy == "joined":
+                for rel in relationships:
+                    # Look up this row's referenced record: its compartment, then its FK value.
+                    fields = foreign_key_dict[rel.local_column][row[rel.local_column]]
+                    relations.append((rel.label, fields))
+
             text = self._verbaliser.verbalise(
-                table, row, content_columns
+                table, row, content_columns, relations
             )  # Converts row into a standard format
             pk_value = str(row[primary_key])  # id of the row
 
