@@ -1,4 +1,9 @@
-""" """
+"""Tests for foreign-key relationship settings.
+
+Asserts that related fields declared in config are exposed only via their join
+relation (with the right label and columns) and are kept out of the base table's
+own indexed columns.
+"""
 
 from semantic_search_middleware.config import get_settings
 

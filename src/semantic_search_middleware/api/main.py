@@ -1,3 +1,10 @@
+"""FastAPI application factory and router wiring.
+
+Constructs the FastAPI app from settings and mounts the health, search, and
+chat routers under the configured API prefix. This is the composition root of
+the API (driving) adapter in the hexagonal architecture.
+"""
+
 from fastapi import FastAPI
 
 from semantic_search_middleware.api.routes import chat_router, health_router, search_router

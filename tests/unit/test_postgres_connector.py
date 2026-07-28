@@ -1,3 +1,9 @@
+"""Tests index_rows_by_key.
+
+Asserts it builds a lookup of rows keyed on the given column, returning an empty
+mapping for no rows.
+"""
+
 from semantic_search_middleware.connectors.postgres import index_rows_by_key
 
 

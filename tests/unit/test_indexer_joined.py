@@ -1,3 +1,8 @@
+"""Tests IndexingService with the joined strategy.
+
+Asserts related-table fields are folded into the embedded text of each base row.
+"""
+
 from semantic_search_middleware.config.settings import Relationship
 from semantic_search_middleware.ingestion.indexer import IndexingService
 from semantic_search_middleware.ingestion.verbaliser import RowVerbaliser

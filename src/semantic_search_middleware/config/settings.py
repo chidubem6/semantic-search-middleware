@@ -1,3 +1,11 @@
+"""Application settings and configuration loading.
+
+Pydantic-settings model that reads configuration from environment / `.env` —
+database URLs, embedding model and dimension, retrieval parameters, and the
+source table, columns and foreign-key relationships to index. The config layer;
+`get_settings` provides a cached singleton for the rest of the application.
+"""
+
 from functools import lru_cache
 
 from pydantic import BaseModel

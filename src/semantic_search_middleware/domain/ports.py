@@ -1,3 +1,11 @@
+"""Port definitions for the middleware's external dependencies.
+
+Structural (`Protocol`) interfaces for the relational connector, embedder,
+vector store and LLM client. As the domain layer's outward-facing ports, they
+let services depend on behaviour rather than concrete adapters, keeping the
+dependency arrows pointing inward.
+"""
+
 from collections.abc import Iterable, Sequence
 from typing import Any, Protocol
 

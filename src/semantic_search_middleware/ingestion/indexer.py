@@ -1,3 +1,12 @@
+"""Indexing use case that builds and stores the embedding index.
+
+Orchestrates the full ingestion pipeline: reads source rows via the connector,
+optionally resolves declared foreign-key relationships in batched queries (the
+"joined" strategy, avoiding N+1), verbalises each row, embeds the text, and
+upserts the resulting documents into the vector store. This is the application
+service layer wiring the connector, verbaliser, embedder, and vector-store ports.
+"""
+
 from collections.abc import Sequence
 
 from semantic_search_middleware.config.settings import Relationship

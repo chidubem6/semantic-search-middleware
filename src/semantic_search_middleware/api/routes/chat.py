@@ -1,3 +1,10 @@
+"""Grounded RAG chat route.
+
+Handles ``POST /chat`` by delegating to the injected ``ChatService`` to produce
+a grounded answer with citations, mapping ``LlmError`` to a 503 response. This
+is the API (driving) adapter over the RAG stage of the pipeline.
+"""
+
 from typing import Annotated
 from uuid import uuid4
 

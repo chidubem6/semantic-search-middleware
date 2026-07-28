@@ -1,3 +1,11 @@
+"""PostgreSQL relational connector.
+
+SQLAlchemy-backed adapter that reads rows from a source table and fetches
+related rows by key for relationship-aware verbalisation. The connector stage of
+the pipeline (`PostgreSQL -> Connector -> ...`), implementing the
+`RelationalConnector` port over the source database.
+"""
+
 from collections.abc import Iterable, Sequence
 from typing import Any
 

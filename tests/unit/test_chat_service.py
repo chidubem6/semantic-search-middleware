@@ -1,3 +1,10 @@
+"""Tests ChatService.
+
+Asserts it abstains without calling the LLM when retrieval is empty; otherwise
+passes the question and configured top_k to retrieval, sends a grounded prompt,
+and cites every retrieved row.
+"""
+
 from semantic_search_middleware.domain.models import (
     IndexedDocument,
     SearchResult,

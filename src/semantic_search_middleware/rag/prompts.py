@@ -1,3 +1,10 @@
+"""Grounded-answer prompt building.
+
+Holds the grounding system prompt and assembles the user prompt from retrieved
+rows (labelled context, best-first) followed by the question. The `rag/` layer's
+input to the LLM, keeping generation constrained to the supplied records.
+"""
+
 from collections.abc import Sequence
 
 from semantic_search_middleware.domain.models import SearchResult

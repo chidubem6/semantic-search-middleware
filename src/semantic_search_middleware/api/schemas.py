@@ -1,3 +1,10 @@
+"""Pydantic request and response schemas for the HTTP API.
+
+Defines the validated wire contracts for the search and chat endpoints,
+wrapping domain models such as ``SearchResult`` and ``Citation``. Lives in the
+API (driving) adapter as the boundary between HTTP and the service layer.
+"""
+
 from typing import Any
 
 from pydantic import BaseModel, Field

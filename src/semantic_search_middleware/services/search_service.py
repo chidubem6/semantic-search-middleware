@@ -1,3 +1,10 @@
+"""Semantic search use case.
+
+Orchestrates a single search: embeds the query, then delegates to the vector
+store to return the nearest scored rows. Sits in the `services/` layer, wiring the
+`Embedder` and `VectorStore` ports together for the retrieval stage of the pipeline.
+"""
+
 from typing import Any
 
 from semantic_search_middleware.domain.models import SearchResult

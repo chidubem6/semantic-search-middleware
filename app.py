@@ -1,3 +1,11 @@
+"""Streamlit chat front end for the semantic search middleware.
+
+Renders a minimal chat UI and forwards each question to the FastAPI
+`/api/v1/chat` endpoint over HTTP, displaying the grounded answer and its
+citations. This is the user-facing entry point of the pipeline
+(User -> Streamlit -> FastAPI -> ...).
+"""
+
 import httpx
 import streamlit as st
 

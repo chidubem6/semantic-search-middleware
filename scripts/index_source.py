@@ -1,3 +1,5 @@
+"""Reads the source database and indexes its rows as embeddings into pgvector."""
+
 from semantic_search_middleware.config import get_settings
 from semantic_search_middleware.connectors.postgres import PostgresConnector
 from semantic_search_middleware.embeddings.sentence_transformer import SentenceTransformerEmbedder
