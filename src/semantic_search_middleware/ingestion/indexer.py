@@ -58,7 +58,12 @@ class IndexingService:
             if strategy == "joined":
                 for rel in relationships:
                     # Look up this row's referenced record: its compartment, then its FK value.
-                    fields = foreign_key_dict[rel.local_column][row[rel.local_column]]
+                    referenced_row = foreign_key_dict[rel.local_column][row[rel.local_column]]
+
+                    # Keep only the columns this relationship declared. The connector
+                    # also returns the key column (its SELECT puts it first), and a
+                    # join key is an accident of storage -- noise in embedded text.
+                    fields = {column: referenced_row[column] for column in rel.columns}
                     relations.append((rel.label, fields))
 
             text = self._verbaliser.verbalise(
