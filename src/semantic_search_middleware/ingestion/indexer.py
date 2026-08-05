@@ -30,10 +30,14 @@ class IndexingService:
         documents = []
         texts = []
 
+        # Only ask for the foreign-key columns when they will actually be followed.
+        # Requesting a column the table does not have is an error, so an isolated
+        # run must not depend on relationships that were merely left configured.
+        joining = strategy == "joined"
+        local_columns = [rel.local_column for rel in relationships] if joining else []
+
         rows = list(
-            self._connector.read_rows(
-                table, [primary_key, *content_columns, *[rel.local_column for rel in relationships]]
-            )
+            self._connector.read_rows(table, [primary_key, *content_columns, *local_columns])
         )
 
         # Resolved referenced rows, keyed {local_column: {key_value: fields}} -- e.g.
@@ -42,7 +46,7 @@ class IndexingService:
 
         # Resolve every relationship up front in ONE batch query each (not per row --
         # avoids the N+1 problem). Only the "joined" strategy pulls related data.
-        if strategy == "joined":
+        if joining:
             for rel in relationships:
                 key_values = [row[rel.local_column] for row in rows]  # this rel's FK on every row
 
@@ -55,7 +59,7 @@ class IndexingService:
         for row in rows:
             # Fold each relationship's fields for THIS row into (label, fields) pairs.
             relations = []
-            if strategy == "joined":
+            if joining:
                 for rel in relationships:
                     # Look up this row's referenced record: its compartment, then its FK value.
                     referenced_row = foreign_key_dict[rel.local_column][row[rel.local_column]]
