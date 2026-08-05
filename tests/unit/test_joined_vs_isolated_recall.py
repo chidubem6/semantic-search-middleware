@@ -100,6 +100,7 @@ relationships = [
 def index_rows_by_key(rows: Iterable[dict[str, Any]], key: str) -> dict[Any, dict[str, Any]]:
     return {row[key]: row for row in rows}
 
+
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
     """
     Output: a score ranging from -1 (opposite) to 1 (identical), with 0
@@ -125,8 +126,8 @@ def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
         raise ValueError("Vectors must be of the same length.")
 
     dot_product = sum(a * b for a, b in zip(vec_a, vec_b, strict=True))
-    magnitude_a = sum(a ** 2 for a in vec_a) ** 0.5
-    magnitude_b = sum(b ** 2 for b in vec_b) ** 0.5
+    magnitude_a = sum(a**2 for a in vec_a) ** 0.5
+    magnitude_b = sum(b**2 for b in vec_b) ** 0.5
 
     if magnitude_a == 0 or magnitude_b == 0:
         raise ValueError("One or both vectors have zero magnitude.")
@@ -158,7 +159,6 @@ class FakeConnector:
             return self._support_tickets
         else:
             raise ValueError(f"Unknown table: {table}")
-    
 
     def read_referenced_rows(self, table, key, key_values, columns):
         """
@@ -223,7 +223,7 @@ class FakeVectorStore:
     def upsert(self, documents, vectors):
         if len(documents) != len(vectors):
             raise ValueError("Documents and vectors must have the same length.")
-        
+
         self.documents.extend(documents)
         self.vectors.extend(vectors)
 
@@ -260,8 +260,6 @@ class FakeVectorStore:
         return sorted(results, key=lambda result: result.score, reverse=True)[:top_k]
 
 
-
-
 @pytest.fixture(scope="module")
 def embedder():
     """Load the transformer once for the whole file, not once per test.
@@ -281,12 +279,8 @@ def test_joined_strategy_beats_isolated_on_recall(embedder):
     joined_store = FakeVectorStore()
 
     # Anonymous, because nothing below refers to them again.
-    isolated_indexer = IndexingService(
-        FakeConnector(), RowVerbaliser(), embedder, isolated_store
-    )
-    joined_indexer = IndexingService(
-        FakeConnector(), RowVerbaliser(), embedder, joined_store
-    )
+    isolated_indexer = IndexingService(FakeConnector(), RowVerbaliser(), embedder, isolated_store)
+    joined_indexer = IndexingService(FakeConnector(), RowVerbaliser(), embedder, joined_store)
 
     content_columns = ["subject", "body", "product", "status", "priority"]
 
