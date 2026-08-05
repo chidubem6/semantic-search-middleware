@@ -1,3 +1,5 @@
+from typing import Any
+
 from semantic_search_middleware.domain.models import (
     IndexedDocument,
     SearchResult,
@@ -7,26 +9,28 @@ from semantic_search_middleware.services.chat_service import ChatService
 
 
 class FakeSearchService:
-    def __init__(self, results):
+    def __init__(self, results: list[SearchResult]) -> None:
         self._results = results
-        self.calls = []
+        self.calls: list[tuple[str, int]] = []
 
-    def search(self, query, top_k, filters=None):
+    def search(
+        self, query: str, top_k: int, filters: dict[str, Any] | None = None
+    ) -> list[SearchResult]:
         self.calls.append((query, top_k))
         return self._results
 
 
 class RecordingLlm:
-    def __init__(self, reply="The reset failed because SMTP was rate-limiting."):
+    def __init__(self, reply: str = "The reset failed because SMTP was rate-limiting.") -> None:
         self._reply = reply
-        self.calls = []
+        self.calls: list[tuple[str, str]] = []
 
-    def complete(self, system_prompt, user_prompt):
+    def complete(self, system_prompt: str, user_prompt: str) -> str:
         self.calls.append((system_prompt, user_prompt))
         return self._reply
 
 
-def make_result(pk_value, score):
+def make_result(pk_value: str, score: float) -> SearchResult:
     return SearchResult(
         document=IndexedDocument(
             document_id=f"support_tickets:{pk_value}",

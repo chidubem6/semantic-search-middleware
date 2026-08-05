@@ -1,10 +1,10 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import Any
 
 import pytest
 
 from semantic_search_middleware.config.settings import Relationship, get_settings
-from semantic_search_middleware.domain.models import SearchResult
+from semantic_search_middleware.domain.models import IndexedDocument, SearchResult
 from semantic_search_middleware.embeddings.sentence_transformer import SentenceTransformerEmbedder
 from semantic_search_middleware.evaluation.recall import recall_at_k
 from semantic_search_middleware.ingestion.indexer import IndexingService
@@ -137,12 +137,12 @@ def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
 
 # --- yours to write from here ---
 class FakeConnector:
-    def __init__(self):
+    def __init__(self) -> None:
         self._support_tickets = support_tickets
         self._customers = customers
         self._products = products
 
-    def read_rows(self, table, columns):
+    def read_rows(self, table: str, columns: Sequence[str]) -> list[dict[str, Any]]:
         """
         Output: support tickets list.
 
@@ -160,7 +160,9 @@ class FakeConnector:
         else:
             raise ValueError(f"Unknown table: {table}")
 
-    def read_referenced_rows(self, table, key, key_values, columns):
+    def read_referenced_rows(
+        self, table: str, key: str, key_values: Iterable[Any], columns: Sequence[str]
+    ) -> dict[Any, dict[str, Any]]:
         """
         Return {key_value: {column: value, ...}, ...} for the requested key_values.
 
@@ -212,22 +214,27 @@ class FakeConnector:
 
 
 class FakeVectorStore:
-    def __init__(self, min_similarity_score: float = 0.0):
-        self.documents = []
-        self.vectors = []
+    def __init__(self, min_similarity_score: float = 0.0) -> None:
+        self.documents: list[IndexedDocument] = []
+        self.vectors: list[list[float]] = []
         # Matches below this score are dropped in search(), same as PgVectorStore.
         # Default 0.0 keeps every non-negative match, so the distractors still show
         # up in the ranking and recall has wrong answers to rank below the gold one.
         self._min_similarity_score = min_similarity_score
 
-    def upsert(self, documents, vectors):
+    def upsert(self, documents: Sequence[IndexedDocument], vectors: Sequence[list[float]]) -> None:
         if len(documents) != len(vectors):
             raise ValueError("Documents and vectors must have the same length.")
 
         self.documents.extend(documents)
         self.vectors.extend(vectors)
 
-    def search(self, query_vector, top_k, filters=None):
+    def search(
+        self,
+        query_vector: list[float],
+        top_k: int,
+        filters: dict[str, Any] | None = None,
+    ) -> list[SearchResult]:
         """
         returned a list of search results, sorted by score descending, with a
         maximum length of top_k.
@@ -261,7 +268,7 @@ class FakeVectorStore:
 
 
 @pytest.fixture(scope="module")
-def embedder():
+def embedder() -> SentenceTransformerEmbedder:
     """Load the transformer once for the whole file, not once per test.
 
     Stateless and read-only, so sharing it across tests is safe -- and it is the
@@ -270,7 +277,7 @@ def embedder():
     return SentenceTransformerEmbedder(get_settings().embedding_model)
 
 
-def test_joined_strategy_beats_isolated_on_recall(embedder):
+def test_joined_strategy_beats_isolated_on_recall(embedder: SentenceTransformerEmbedder) -> None:
     # --- Arrange ----------------------------------------------------------
     # Fresh stores per test: they accumulate documents, so sharing them would
     # leak one test's index into the next. The embedder can be shared; these
