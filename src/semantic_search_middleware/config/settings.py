@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,6 +32,7 @@ class Settings(BaseSettings):
     index_table: str = "support_tickets"
     index_primary_key: str = "id"
     index_columns: list[str] = ["subject", "body", "product", "status", "priority"]
+    index_strategy: Literal["isolated", "joined"] = "isolated"
     index_relationships: list[Relationship] = [
         Relationship(
             local_column="customer_id",
