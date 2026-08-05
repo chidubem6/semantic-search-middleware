@@ -11,12 +11,18 @@
 
 **Do not build the chatbot before this works.** Retrieval quality is the foundation.
 
-## Milestone 1 — Grounded chat
+## Milestone 1 — Grounded chat ✅
 
 - Build prompt assembly from retrieved rows.
 - Add an Ollama or hosted LLM adapter.
 - Return abstention when retrieval is weak.
 - Return citations for each answer.
+
+**Done.** `/api/v1/chat` retrieves rows, assembles a grounded prompt, and calls a
+local LLM through an `LlmClient` port (Ollama adapter). Retrieval-gated abstention
+refuses without calling the LLM when nothing relevant is found; an unreachable
+model fails loudly with HTTP 503. **Post-generation faithfulness checking is
+deferred to Milestone 5**, where an evaluation set can measure it.
 
 ## Milestone 2 — Relationship-aware indexing
 
@@ -34,6 +40,10 @@
 
 - Add a deterministic document ID and source-row checksum.
 - Upsert changed rows and delete removed rows.
+- Detect changes in referenced tables too, not only the indexed one: under the
+  joined strategy a customer's plan can change while every ticket row stays
+  byte-identical, so a row checksum skips them. Checksum the verbalised text, or
+  record referenced keys in the document's metadata. See ADR 0002.
 - Start with a scheduled sync; CDC is optional.
 
 ## Milestone 5 — Evaluation

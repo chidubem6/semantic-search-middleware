@@ -2,14 +2,57 @@
 -- load ~400 synthetic support tickets. All data is fake and non-sensitive.
 \connect source_data
 
+-- Milestone 2 normalises the schema: customers and products become their own
+-- tables, and support_tickets references them by foreign key. The descriptive
+-- attributes below (plan, region, team) live ONLY here -- they are deliberately
+-- NOT columns on support_tickets. That is what makes the isolated-vs-joined
+-- verbalisation experiment fair: isolated verbalisation is structurally blind to
+-- them, and only following the foreign key can surface them.
+
+CREATE TABLE IF NOT EXISTS customers (
+    id     SERIAL PRIMARY KEY,
+    name   TEXT NOT NULL,
+    plan   TEXT NOT NULL,   -- free | pro | enterprise
+    region TEXT NOT NULL    -- NA | EU | APAC
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id   SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    team TEXT NOT NULL       -- owning team
+);
+
+-- WITH ORDINALITY exposes each array element's 1-based position as `ord`. Because
+-- SERIAL ids are assigned in insert order, customers.id == ord (and products.id ==
+-- ord), so the ticket arithmetic below (g % 10, g % 5) addresses the matching row.
+INSERT INTO customers (name, plan, region)
+SELECT c.name,
+       (ARRAY['free', 'pro', 'enterprise'])[1 + ((c.ord - 1) % 3)],
+       (ARRAY['NA', 'EU', 'APAC'])[1 + (c.ord % 3)]
+FROM unnest(ARRAY['Ada', 'Blake', 'Chen', 'Diego', 'Emeka', 'Farah', 'Grace', 'Hiro', 'Ivy', 'Jonas'])
+     WITH ORDINALITY AS c(name, ord)
+ORDER BY c.ord;   -- guarantee SERIAL is assigned in position order, so customers.id == ord
+
+INSERT INTO products (name, team)
+SELECT p.name,
+       (ARRAY['Identity', 'Payments', 'Core Platform', 'Billing', 'Desktop'])[p.ord]
+FROM unnest(ARRAY['Web App', 'Mobile App', 'Public API', 'Billing Portal', 'Desktop Client'])
+     WITH ORDINALITY AS p(name, ord)
+ORDER BY p.ord;   -- guarantee products.id == ord
+
 CREATE TABLE IF NOT EXISTS support_tickets (
-    id         SERIAL PRIMARY KEY,
-    subject    TEXT NOT NULL,
-    body       TEXT NOT NULL,
-    product    TEXT NOT NULL,
-    status     TEXT NOT NULL,
-    priority   TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL
+    id          SERIAL PRIMARY KEY,
+    subject     TEXT NOT NULL,
+    body        TEXT NOT NULL,
+    product     TEXT NOT NULL,
+    status      TEXT NOT NULL,
+    priority    TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL,
+    -- Declared foreign keys: enforced (a bad id is rejected) and self-documenting.
+    -- The verbaliser still follows the CONFIG, not these constraints -- so the
+    -- design works against a real source DB that declares no FKs at all.
+    customer_id INT NOT NULL REFERENCES customers(id),
+    product_id  INT NOT NULL REFERENCES products(id)
 );
 
 -- Generate 400 rows by combining 20 recurring "themes" (subject + matching body)
@@ -67,7 +110,7 @@ WITH params AS (
         ARRAY['low', 'medium', 'high', 'urgent'] AS priorities,
         ARRAY['Ada', 'Blake', 'Chen', 'Diego', 'Emeka', 'Farah', 'Grace', 'Hiro', 'Ivy', 'Jonas'] AS customers
 )
-INSERT INTO support_tickets (subject, body, product, status, priority, created_at)
+INSERT INTO support_tickets (subject, body, product, status, priority, created_at, customer_id, product_id)
 SELECT
     p.subjects[1 + (g % 20)],
     p.customers[1 + (g % array_length(p.customers, 1))] || ' reports that '
@@ -77,5 +120,9 @@ SELECT
     p.products[1 + (g % array_length(p.products, 1))],
     p.statuses[1 + (g % array_length(p.statuses, 1))],
     p.priorities[1 + (g % array_length(p.priorities, 1))],
-    now() - (random() * interval '180 days')
+    now() - (random() * interval '180 days'),
+    -- Same rotations the body/product above already use, so the FK points at the
+    -- very customer named in the text and the product shown in the product column.
+    1 + (g % array_length(p.customers, 1)),   -- customer_id  (matches customers.id == ord)
+    1 + (g % array_length(p.products, 1))     -- product_id   (matches products.id  == ord)
 FROM generate_series(1, 400) AS g, params AS p;

@@ -25,3 +25,9 @@ class Citation(BaseModel):
     table: str
     primary_key: str
     primary_key_value: str
+
+
+class ChatAnswer(BaseModel):
+    answer: str
+    citations: list[Citation] = Field(default_factory=list)
+    supported: bool

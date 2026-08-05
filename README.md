@@ -61,8 +61,29 @@ Open `http://localhost:8000/docs`.
 indexed documents from pgvector, and returns them scored and with source
 citations. Populate the index first with `python scripts/index_source.py`.
 
-`POST /api/v1/chat` still returns a placeholder until grounded generation is
-implemented (Milestone 1).
+`POST /api/v1/chat` is implemented: it retrieves the nearest indexed documents,
+assembles a grounded prompt from them, and asks a local LLM (via Ollama) for an
+answer constrained to those records. The request body is `{"message": "...",
+"conversation_id": "optional"}`; the response is `{"answer", "citations",
+"conversation_id", "supported"}`. When retrieval finds no relevant records the
+service **abstains** — it returns `supported: false` with a refusal message and
+empty citations, without ever calling the LLM. If the model cannot be reached the
+endpoint fails loudly with HTTP 503 rather than returning an ungrounded answer.
+
+Chatting requires Ollama running locally with the configured model pulled
+(`ollama pull llama3.2`) and the index populated (`python scripts/index_source.py`).
+
+Example:
+
+```bash
+curl -s -X POST localhost:8000/api/v1/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "how do I fix a failed password reset?"}'
+```
+
+Post-generation faithfulness checking (verifying the answer only claims what the
+cited rows support) is deferred to Milestone 5, where an evaluation set can
+measure it.
 
 ## Recommended build order
 
