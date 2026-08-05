@@ -1,3 +1,9 @@
+"""Tests the /api/v1/chat route.
+
+Asserts it returns a grounded answer with citations, echoes the conversation id,
+and fails with 503 when the model is unreachable.
+"""
+
 import pytest
 from fastapi.testclient import TestClient
 

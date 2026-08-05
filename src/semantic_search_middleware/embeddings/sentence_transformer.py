@@ -1,3 +1,10 @@
+"""sentence-transformers embedding backend.
+
+Adapts a local sentence-transformers model to the Embedder port, encoding text
+into normalised vectors. This is the embeddings adapter at the Embedder stage of
+the ingestion pipeline (Verbaliser -> Embedder -> pgvector).
+"""
+
 from collections.abc import Sequence
 from typing import cast
 

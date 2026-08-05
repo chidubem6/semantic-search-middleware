@@ -1,3 +1,10 @@
+"""Tests the configuration the strategy comparison depends on.
+
+Asserts that no relationship requests a column already indexed on the base table
+(so the isolated strategy cannot reach it), and that the customer relationship
+does request the fields the comparison relies on.
+"""
+
 from semantic_search_middleware.config import get_settings
 
 

@@ -1,3 +1,9 @@
+"""Tests OllamaClient.
+
+Asserts it posts a chat completion and returns the message content, raising
+LlmError on HTTP or transport failures.
+"""
+
 import json
 from collections.abc import Callable
 

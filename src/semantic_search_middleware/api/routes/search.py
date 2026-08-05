@@ -1,3 +1,10 @@
+"""Semantic search route.
+
+Handles ``POST /search`` by delegating the query to the injected
+``SearchService`` and returning scored results. This is the API (driving)
+adapter over the retrieval stage of the pipeline.
+"""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends

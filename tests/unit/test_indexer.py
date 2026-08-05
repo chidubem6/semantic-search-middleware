@@ -1,3 +1,9 @@
+"""Tests IndexingService.
+
+Asserts it verbalises, embeds and upserts each source row as a document keyed by
+table and primary key.
+"""
+
 from semantic_search_middleware.ingestion.indexer import IndexingService
 from semantic_search_middleware.ingestion.verbaliser import RowVerbaliser
 

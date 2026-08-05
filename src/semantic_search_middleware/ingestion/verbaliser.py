@@ -1,3 +1,11 @@
+"""Deterministic row-to-text verbalisation.
+
+Turns a selected set of source-row fields (and any folded-in related-row fields)
+into a single, stable text string ready for embedding. Sits at the verbaliser
+stage of the ingestion pipeline (PostgreSQL -> Connector -> Verbaliser ->
+Embedder -> pgvector).
+"""
+
 from collections.abc import Mapping, Sequence
 from typing import Any
 

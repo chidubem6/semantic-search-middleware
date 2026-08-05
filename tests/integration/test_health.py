@@ -1,3 +1,5 @@
+"""Tests the /health endpoint: it returns 200 with a status-ok JSON body."""
+
 from fastapi.testclient import TestClient
 
 from semantic_search_middleware.api.main import app

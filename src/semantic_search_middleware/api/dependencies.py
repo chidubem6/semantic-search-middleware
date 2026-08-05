@@ -1,3 +1,11 @@
+"""Dependency-injection providers for the API layer.
+
+Assembles and caches the application services (``SearchService``,
+``ChatService``) by wiring together the embedder, pgvector store, and Ollama
+LLM client from settings. These factories are the composition seam that lets
+FastAPI routes depend on services without knowing their concrete adapters.
+"""
+
 from functools import lru_cache
 
 from semantic_search_middleware.config.settings import get_settings

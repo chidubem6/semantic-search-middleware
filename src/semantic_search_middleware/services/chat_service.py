@@ -1,3 +1,10 @@
+"""Grounded chat use case.
+
+Retrieves relevant rows via the search service, builds a grounded prompt, and asks
+the LLM client for an answer with citations, abstaining when nothing is retrieved.
+The `services/` orchestration behind the RAG chat endpoint.
+"""
+
 from semantic_search_middleware.domain.models import ChatAnswer, Citation
 from semantic_search_middleware.domain.ports import LlmClient
 from semantic_search_middleware.rag.prompts import GROUNDED_SYSTEM_PROMPT, build_context_prompt

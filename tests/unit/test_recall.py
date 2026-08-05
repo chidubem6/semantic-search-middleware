@@ -1,3 +1,9 @@
+"""Tests recall_at_k.
+
+Asserts it computes the fraction of relevant rows found within the top-k results,
+handling short result lists and no relevant rows.
+"""
+
 import pytest
 
 from semantic_search_middleware.evaluation.recall import recall_at_k

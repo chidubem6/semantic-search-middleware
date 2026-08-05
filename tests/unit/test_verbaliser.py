@@ -1,3 +1,9 @@
+"""Tests RowVerbaliser.
+
+Asserts it deterministically renders a row into text over selected columns and
+folds related-record fields in.
+"""
+
 from semantic_search_middleware.ingestion.verbaliser import RowVerbaliser
 
 

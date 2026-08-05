@@ -1,3 +1,9 @@
+"""Tests build_context_prompt.
+
+Asserts it deterministically embeds the question and every retrieved row with its
+source labels into the prompt.
+"""
+
 from semantic_search_middleware.domain.models import (
     IndexedDocument,
     SearchResult,

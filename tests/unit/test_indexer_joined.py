@@ -1,3 +1,10 @@
+"""Tests IndexingService with the joined strategy.
+
+Asserts related-table fields are folded into the embedded text of each base row,
+that the referenced key is not, and that referenced rows are fetched in one
+batched call rather than one per row.
+"""
+
 from collections.abc import Iterable, Sequence
 from typing import Any
 

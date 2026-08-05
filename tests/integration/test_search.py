@@ -1,3 +1,5 @@
+"""Tests the /api/v1/search route: it returns scored results with their source citation."""
+
 from fastapi.testclient import TestClient
 
 from semantic_search_middleware.api.dependencies import get_search_service
