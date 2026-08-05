@@ -12,7 +12,7 @@ from semantic_search_middleware.domain.models import (
 from semantic_search_middleware.rag.prompts import build_context_prompt
 
 
-def make_result(pk_value, text, score):
+def make_result(pk_value: str, text: str, score: float) -> SearchResult:
     return SearchResult(
         document=IndexedDocument(
             document_id=f"support_tickets:{pk_value}",

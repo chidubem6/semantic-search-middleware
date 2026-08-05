@@ -5,6 +5,7 @@ LlmError on HTTP or transport failures.
 """
 
 import json
+from collections.abc import Callable
 
 import httpx
 import pytest
@@ -13,7 +14,7 @@ from semantic_search_middleware.domain.errors import LlmError
 from semantic_search_middleware.llm.ollama import OllamaClient
 
 
-def build_client(handler):
+def build_client(handler: Callable[[httpx.Request], httpx.Response]) -> OllamaClient:
     # MockTransport intercepts requests in-process: no Ollama, no network.
     return OllamaClient(
         base_url="http://ollama.test",
@@ -24,7 +25,7 @@ def build_client(handler):
 
 
 def test_complete_returns_message_content() -> None:
-    def handler(request):
+    def handler(request: httpx.Request) -> httpx.Response:
         payload = json.loads(request.content)
         assert request.url.path == "/api/chat"
         assert payload["model"] == "llama3.2"
@@ -48,7 +49,7 @@ def test_complete_raises_llm_error_on_http_error() -> None:
 
 
 def test_complete_raises_llm_error_on_transport_failure() -> None:
-    def handler(request):
+    def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("connection refused")
 
     client = build_client(handler)

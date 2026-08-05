@@ -40,6 +40,10 @@ deferred to Milestone 5**, where an evaluation set can measure it.
 
 - Add a deterministic document ID and source-row checksum.
 - Upsert changed rows and delete removed rows.
+- Detect changes in referenced tables too, not only the indexed one: under the
+  joined strategy a customer's plan can change while every ticket row stays
+  byte-identical, so a row checksum skips them. Checksum the verbalised text, or
+  record referenced keys in the document's metadata. See ADR 0002.
 - Start with a scheduled sync; CDC is optional.
 
 ## Milestone 5 — Evaluation

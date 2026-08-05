@@ -19,7 +19,9 @@ def main() -> None:
     )
 
     count = service.index_table(
-        settings.index_table, settings.index_primary_key, settings.index_columns
+        settings.index_table, settings.index_primary_key, 
+        settings.index_columns, relationships=settings.index_relationships, 
+        strategy=settings.index_strategy
     )
     print(f"Indexed {count} documents from {settings.index_table}")
 
