@@ -45,8 +45,10 @@ class Settings(BaseSettings):
             local_column="product_id",
             referenced_table="products",
             referenced_key="id",
-            columns=["name", "team"],
-            label="product",
+            columns=["team"],
+            # The ticket's own "product" column already carries the name, so this
+            # relationship adds only what an isolated row cannot reach: the team.
+            label="product team",
         ),
     ]
     llm_provider: str = "ollama"
