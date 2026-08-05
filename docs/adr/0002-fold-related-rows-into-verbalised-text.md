@@ -52,6 +52,31 @@ effect, not its magnitude, and the fixture was built to make the difference visi
 claim about how much retrieval improves should rest on it. Milestone 5 replaces this with
 30-50 questions and expected rows; these figures stand in until then.
 
+### Observed on the full index
+The fixture result did not carry over to 400 seeded rows indexed with the joined
+strategy. Queried through `/api/v1/search`:
+
+| query | top score | top hit's folded-in fields |
+| --- | --- | --- |
+| "enterprise plan customers in the EU" | 0.300 | `(Emeka, pro, APAC)` — wrong plan, wrong region |
+| "gold plan customers in the EU" | 0.270 | dropped entirely by `MIN_SIMILARITY_SCORE=0.30` |
+| "password reset not working" | 0.600 | correct, and the strongest match by far |
+
+Folding the fields in is necessary but not sufficient. It makes the values *present* —
+under the isolated strategy no query could reach them at all — but presence does not make
+them *decisive*. Cosine similarity compares whole texts, and a short related-fields tail
+barely moves the vector when 400 tickets are otherwise alike. The fixture showed a clean
+result partly because the folded-in fields were a large share of a short text with only
+two competitors.
+
+Not measured: the same queries against an isolated index of the same 400 rows. The words
+are absent there, so it should be worse, but that has not been run.
+
+This is the concrete case for Milestone 3. Lexical matching privileges the literal token
+"enterprise" in a way vector similarity does not, and attribute-shaped questions may be
+better served by a structured filter than by retrieval at all — `SearchRequest.filters`
+exists and is unused.
+
 ### Gained
 - Questions about a row's relationships become answerable, because the answer is now in
   the embedded text rather than in a table retrieval never reads.
